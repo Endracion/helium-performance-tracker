@@ -4,7 +4,7 @@ from selenium import webdriver
 driver = webdriver.Firefox()
 
 # Open a webpage
-driver.get('http://example.com')
+driver.get('https://heliumtracker.io/hotspots/618961')
 
 # Remember to close the driver once you're done
 driver.quit()
