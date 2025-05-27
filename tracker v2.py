@@ -16,20 +16,21 @@ import random
 
 def start_date_input(driver, date):
     # Wait for the start date input field to be available and locate it by 'id'
-    start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, start_date)))
+    start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'start_date')))
     # Clear the field and enter the desired start date
     start_date_field.clear()
-    start_date_field.send_keys(start_date)  # Push the start date into the input field
+    start_date_field.send_keys(date)  # Push the start date into the input field
 
 def end_date_input(driver, date):
-    end_date_field = driver.find_element(By.ID, end_date) # Locate the end date input field by 'id'
+    end_date_field = driver.find_element(By.ID, 'end_date') # Locate the end date input field by 'id'
     end_date_field.clear()
-    end_date_field.send_keys(end_date) # Push the end date into the input field
+    end_date_field.send_keys(date) # Push the end date into the input field
 
-def write_results_to_csv(df):
+def write_results_to_csv(df, start_date, end_date):
     # Write your updates back to the CSV
     filename = f"tracker_results_{start_date}_{end_date}.csv"
     df.to_csv(f'{filename}', index=False)
+    print(f"Data successfully written to file: {filename}")
 
 # Initialize the Firefox driver
 driver = webdriver.Firefox() # Adjust this if you're using a different browser driver for Selenium
@@ -42,18 +43,10 @@ for index, row in df.iterrows():
     driver.get(url) # This opens the URL in the browser through Selenium
 
     try:
-        # Wait for the start date input field to be available and locate it by 'id'
-        start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'start_date')))
-
-        # Clear the field and enter the desired start date
         start_date = '2025-04-27'  # Adjust this date as needed, will be loaded from the csv in the future
-        start_date_field.clear()
-        start_date_field.send_keys(start_date)  # Push the start date into the input field
-
         end_date = '2025-05-20'  # Adjust this date as needed, will be loaded from the csv in the future
-        end_date_field = driver.find_element(By.ID, 'end_date') # Locate the end date input field by 'id'
-        end_date_field.clear()
-        end_date_field.send_keys(end_date) # Push the end date into the input field
+        start_date_input(driver, start_date) # Call the function to input the start date
+        end_date_input(driver, end_date) # Call the function to input the end date
 
         submit_button = driver.find_element(By.NAME, 'commit')  # 'commit' is the name attribute of the submit button
         submit_button.click()
@@ -84,12 +77,7 @@ for index, row in df.iterrows():
 wait_time = random.randint(10, 20)
 time.sleep(wait_time) # Adjust the number of seconds depending on your needs
 
-# Write your updates back to the CSV
-filename = f"tracker_results_{start_date}_{end_date}.csv"
-df.to_csv(f'{filename}', index=False)
-
-print(f"Data successfully written to file: {filename}")
-
+write_results_to_csv(df, start_date, end_date)
 
 # Remember to close the driver once you're done
 driver.quit()
