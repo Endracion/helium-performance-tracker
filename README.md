@@ -30,4 +30,4 @@ In the terminal, you'll be asked for a start and end date.
 The program will then loop through all the provided IDs and write the name of the hotspot along with its performance data to a csv that includes the start and end dates.
 
 ## License
-This project is licensed under the GNU GENERAL PUBLIC LICENSE V3 - see the LICENSE file for details.
+This project is licensed under the GNU GENERAL PUBLIC LICENSE V3 - see the [LICENSE](https://github.com/Endracion/helium-performance-tracker/blob/main/LICENSE) file for details.
