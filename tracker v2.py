@@ -7,28 +7,41 @@ import pandas as pd
 import time
 import random
 
-# Initialize the Firefox driver
-driver = webdriver.Firefox() # Adjust this if you're using a different browser driver for Selenium
-
-# In turn, open a webpage to the specified URL from the provided csv
+# Ppen a webpage to the specified URL from the provided csv and for each
 # apply start and end date according to csv on the page and submit with the button
 # scrape name and perfromance data
 # write name and performance data to csv file that's generated with a timestamp
 # apply 0.2 and 0.3 to performance data and save it as well
 # print name of csv file
 
+def start_date_input(driver, date):
+    # Wait for the start date input field to be available and locate it by 'id'
+    start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, start_date)))
+    # Clear the field and enter the desired start date
+    start_date_field.clear()
+    start_date_field.send_keys(start_date)  # Push the start date into the input field
+
+def end_date_input(driver, date):
+    end_date_field = driver.find_element(By.ID, end_date) # Locate the end date input field by 'id'
+    end_date_field.clear()
+    end_date_field.send_keys(end_date) # Push the end date into the input field
+
+def write_results_to_csv(df):
+    # Write your updates back to the CSV
+    filename = f"tracker_results_{start_date}_{end_date}.csv"
+    df.to_csv(f'{filename}', index=False)
+
+# Initialize the Firefox driver
+driver = webdriver.Firefox() # Adjust this if you're using a different browser driver for Selenium
+
 df = pd.read_csv('tracker_results.csv', dtype=str) # This loads the csv file into pandas DataFrame
 
 for index, row in df.iterrows():
     Id = str(row['Id'])
-# Id = "618676" # temporary fixed Id for testing purposes, replace with your logic to get Ids from the DataFrame
     url = (f'https://heliumtracker.io/hotspots/{Id}') # Construct the URL using the Id
     driver.get(url) # This opens the URL in the browser through Selenium
 
-# headers = ['Id', 'Name', 'Performance'] # Define the headers for the csv/DataFrame
-# df = pd.DataFrame(columns=headers) # Create a DataFrame with the specified headers
-
-    try: #
+    try:
         # Wait for the start date input field to be available and locate it by 'id'
         start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'start_date')))
 
@@ -71,25 +84,12 @@ for index, row in df.iterrows():
 wait_time = random.randint(10, 20)
 time.sleep(wait_time) # Adjust the number of seconds depending on your needs
 
-timestamp_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-filename = f"tracker_results_{timestamp_str}.csv"
-df.to_csv(f'tracker_results_{timestamp_str}.csv', index=False)
-
-# # Step 1: Get the current date and time
-# now = datetime.now()
-
-# # Step 2: Format the current date and time
-# timestamp_str = now.strftime("%Y%m%d_%H%M%S")
-
-# # Step 3: Create a new filename using the timestamp
-# filename = f"tracker_results_{timestamp_str}.csv"
-
-# # Step 4: Write the DataFrame to a new CSV file with the timestamped filename
-# df.to_csv(filename, index=False)
+# Write your updates back to the CSV
+filename = f"tracker_results_{start_date}_{end_date}.csv"
+df.to_csv(f'{filename}', index=False)
 
 print(f"Data successfully written to file: {filename}")
-# Step 3: Write your updates back to the CSV
-# df.to_csv('tracker_results.csv', index=False)  # Save the updated data to a new CSV file
+
 
 # Remember to close the driver once you're done
 driver.quit()
