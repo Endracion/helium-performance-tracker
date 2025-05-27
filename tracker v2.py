@@ -14,9 +14,21 @@ import random
 # apply 0.2 and 0.3 to performance data and save it as well
 # print name of csv file
 
-# Global variables for start and end dates
+# Global variables for start and end dates, input by the user
 start_date = input("Enter start date (YYYY-MM-DD): ")
 end_date = input("Enter end date (YYYY-MM-DD): ")
+
+def validate_date(date_str):
+    try:
+        datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+if not (validate_date(start_date) and validate_date(end_date)):
+    print ("Start or end date is not in the format YYYY-MM-DD")
+    start_date = input("Enter start date (YYYY-MM-DD): ")
+    end_date = input("Enter end date (YYYY-MM-DD): ")
 
 def start_date_input(driver, date):
     # Wait for the start date input field to be available and locate it by 'id'
@@ -38,6 +50,7 @@ def write_results_to_csv(df, start_date, end_date):
 
 # Initialize the Firefox driver
 driver = webdriver.Firefox() # Adjust this if you're using a different browser driver for Selenium
+print("Selenium driver initialized.")
 
 df = pd.read_csv('tracker_results.csv', dtype=str) # This loads the csv file into pandas DataFrame
 
@@ -64,8 +77,6 @@ for index, row in df.iterrows(): # Iterate through each row in the DataFrame
         id_performance = float(id_performance) # Convert the performance text to a float
 
         print('Extracted name:', id_name) # Print results to make sure we're getting the right data
-        print('Extracted start date:', start_date) # Print results to make sure we're getting the right data
-        print('Extracted end date:', end_date) # Print results to make sure we're getting the right data
         print('Extracted perf:', id_performance) # Print results to make sure we're getting the right data
         print('0.2 of perf:', id_performance*0.2) # Print 20% of the performance
         print('0.3 of perf:', id_performance*0.3) # Print 30% of the performance
