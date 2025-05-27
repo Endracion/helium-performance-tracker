@@ -6,7 +6,8 @@ Before you begin, ensure you have met the following requirements:
 
 - You have Python 3.x installed.
 - You have internet access to download necessary libraries and tools.
-- This will install the following dependencies: requests, beautifulsoup4, selenium
+- You have Firefox or another Selenium Driver compatible browser (this project uses Firefox).
+- This will install the following dependencies: requests, beautifulsoup4, selenium, pandas
 
 ## Installation
 - Clone the repository
