@@ -111,8 +111,8 @@ for index, row in df.iterrows(): # Iterate through each row in the DataFrame
 
         # Wait for a few seconds before proceeding to the next URL
         wait_time = random.randint(10, 20)
-        time.sleep(wait_time) # Adjust the number of seconds depending on your needs
         print(f"Waiting for {wait_time} seconds before processing the next ID...")
+        time.sleep(wait_time) # Adjust the number of seconds depending on your needs
         
     except Exception as e: # Catch any exceptions that occur during the process
         print(f"General error processing ID {Id}:", e)
