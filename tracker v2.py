@@ -14,6 +14,10 @@ import random
 # apply 0.2 and 0.3 to performance data and save it as well
 # print name of csv file
 
+# Global variables for start and end dates
+start_date = input("Enter start date (YYYY-MM-DD): ")
+end_date = input("Enter end date (YYYY-MM-DD): ")
+
 def start_date_input(driver, date):
     # Wait for the start date input field to be available and locate it by 'id'
     start_date_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'start_date')))
@@ -37,14 +41,12 @@ driver = webdriver.Firefox() # Adjust this if you're using a different browser d
 
 df = pd.read_csv('tracker_results.csv', dtype=str) # This loads the csv file into pandas DataFrame
 
-for index, row in df.iterrows():
+for index, row in df.iterrows(): # Iterate through each row in the DataFrame
     Id = str(row['Id'])
     url = (f'https://heliumtracker.io/hotspots/{Id}') # Construct the URL using the Id
     driver.get(url) # This opens the URL in the browser through Selenium
 
     try:
-        start_date = '2025-04-27'  # Adjust this date as needed, will be loaded from the csv in the future
-        end_date = '2025-05-20'  # Adjust this date as needed, will be loaded from the csv in the future
         start_date_input(driver, start_date) # Call the function to input the start date
         end_date_input(driver, end_date) # Call the function to input the end date
 
@@ -59,13 +61,22 @@ for index, row in df.iterrows():
         id_name = span_element_name.text
         id_performance = span_element_performance.text
         id_performance = id_performance.replace(" HNT", "") # Remove " HNT" from the performance text to be able to convert it to a float
+        id_performance = float(id_performance) # Convert the performance text to a float
 
         print('Extracted name:', id_name) # Print results to make sure we're getting the right data
+        print('Extracted start date:', start_date) # Print results to make sure we're getting the right data
+        print('Extracted end date:', end_date) # Print results to make sure we're getting the right data
         print('Extracted perf:', id_performance) # Print results to make sure we're getting the right data
+        print('0.2 of perf:', id_performance*0.2) # Print 20% of the performance
+        print('0.3 of perf:', id_performance*0.3) # Print 30% of the performance
 
     # Update DataFrame
         df.at[index, 'Name'] = id_name
-        df.at[index, 'Performance'] = float(id_performance)
+        df.at[index, 'Start'] = start_date
+        df.at[index, 'End'] = end_date
+        df.at[index, 'Performance'] = id_performance # Convert performance to float for calculations
+        df.at[index, '0.2'] = id_performance*0.2 # Calculate 20% of the performance
+        df.at[index, '0.3'] = id_performance*0.3 # Calculate 30% of the performance
 
         # df.loc[df['Id'] == Id, 'Name'] = id_name # match the data to the right column for the dataframe
         # df.loc[df['Id'] == Id, 'Performance'] = id_performance # match the data to the right column for the dataframe
