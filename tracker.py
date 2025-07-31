@@ -18,10 +18,6 @@ from dotenv import load_dotenv
 # apply 0.2 and 0.3 to performance data and save it as well
 # print name of saved csv file
 
-# Global variables for start and end dates, input by the user
-start_date = input("Enter start date (YYYY-MM-DD): ")
-end_date = input("Enter end date (YYYY-MM-DD): ")
-
 # Credentials (use environment variables)
 load_dotenv()  # Load .env file
 
@@ -59,24 +55,34 @@ def login(driver, email, password):
         driver.quit()
         exit(1)
 
-def validate_date(date_str):
-    try:
-        date_object = datetime.strptime(date_str, "%Y-%m-%d") # Parse the date string into a datetime object
-        today = datetime.now().date() # Get the current date without time for comparison
-        
-        if date_object.date() > today: # Check if the provided date is in the future
-            print(f"Error: {date_str} is a future date. Please enter a valid past or current date.")
-            return False
-        
-        return True
-        
-    except ValueError:
-        return False
+def get_valid_month():
+    today = datetime.today()
+    current_year = today.year
+    latest_valid_month = today.month - 1
 
-if not (validate_date(start_date) and validate_date(end_date)):
-    print ("Start or end date is not valid.")
-    start_date = input("Re-enter start date (YYYY-MM-DD): ")
-    end_date = input("Re-enter end date (YYYY-MM-DD): ")
+    # Handle January (wrap around to previous year)
+    if latest_valid_month == 0:
+        latest_valid_month = 12
+        current_year -= 1
+
+    while True:
+        try:
+            month_num = int(input(f"Enter the month number to get data for (1-12), must be <= {latest_valid_month}: "))
+            if 1 <= month_num <= latest_valid_month:
+                return current_year, month_num
+            else:
+                print("Invalid month. Please choose a past month (not current or future).")
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 12.")
+
+# Usage
+year, month = get_valid_month()
+start_date = f"{year}-{month:02d}-01"
+_, last_day = calendar.monthrange(year, month)
+end_date = f"{year}-{month:02d}-{last_day:02d}"
+
+print("Start date:", start_date)
+print("End date:", end_date)
 
 def start_date_input(driver, date):
     # Wait for the start date input field to be available and locate it by 'id'
