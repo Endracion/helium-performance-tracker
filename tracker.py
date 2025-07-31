@@ -30,12 +30,29 @@ if not email or not password:
 
 def login(driver, email, password):
     login_url = "https://heliumtracker.io/users/sign_in"
-    driver.get(login_url)
+    print(f"Navigating to login page: {login_url}")
+    
+    # Set hard timeout for full page load
+    driver.set_page_load_timeout(15)
 
     try:
+        driver.get(login_url)
+    except TimeoutException:
+        print("Login page took too long to load. Website may be down.")
+        driver.quit()
+        exit(1)
+
+    try:
+        # Wait for email field to confirm page loaded successfully
         email_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "user_email"))
         )
+    except TimeoutException:
+        print("Login form did not appear. Page may not have loaded correctly.")
+        driver.quit()
+        exit(1)
+
+    try:
         password_input = driver.find_element(By.ID, "user_password")
         login_button = driver.find_element(By.XPATH, "//button[text()='Login']")
 
@@ -45,13 +62,13 @@ def login(driver, email, password):
         password_input.send_keys(password)
         login_button.click()
 
-        # Wait until login completes, maybe by checking a dashboard element
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[@href='/users/sign_out']"))
         )
         print("Login successful.")
+
     except TimeoutException:
-        print("Login failed or took too long.")
+        print("Login failed — check credentials or site issue.")
         driver.quit()
         exit(1)
 
