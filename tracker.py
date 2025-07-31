@@ -3,10 +3,13 @@ from selenium.webdriver.common.by import By  # Import By from selenium's webdriv
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+import calendar
 from datetime import datetime
 import pandas as pd
 import time
 import random
+import os
+from dotenv import load_dotenv
 
 # Open a webpage to the specified URL from the provided csv and for each
 # apply start and end date according user input and submit with the button
@@ -18,6 +21,43 @@ import random
 # Global variables for start and end dates, input by the user
 start_date = input("Enter start date (YYYY-MM-DD): ")
 end_date = input("Enter end date (YYYY-MM-DD): ")
+
+# Credentials (use environment variables)
+load_dotenv()  # Load .env file
+
+email = os.getenv("HT_EMAIL")
+password = os.getenv("HT_PASSWORD")
+
+if not email or not password:
+    print("Email or password not found in environment variables.")
+    exit(1)
+
+def login(driver, email, password):
+    login_url = "https://heliumtracker.io/users/sign_in"
+    driver.get(login_url)
+
+    try:
+        email_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "user_email"))
+        )
+        password_input = driver.find_element(By.ID, "user_password")
+        login_button = driver.find_element(By.XPATH, "//button[text()='Login']")
+
+        email_input.clear()
+        email_input.send_keys(email)
+        password_input.clear()
+        password_input.send_keys(password)
+        login_button.click()
+
+        # Wait until login completes, maybe by checking a dashboard element
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@href='/users/sign_out']"))
+        )
+        print("Login successful.")
+    except TimeoutException:
+        print("Login failed or took too long.")
+        driver.quit()
+        exit(1)
 
 def validate_date(date_str):
     try:
@@ -59,6 +99,8 @@ def write_results_to_csv(df, start_date, end_date):
 # Initialize the Firefox driver
 print("Selenium driver initialized, please wait...")
 driver = webdriver.Firefox() # Adjust this if you're using a different browser driver for Selenium
+
+login(driver, email, password)
 
 # Load input data
 df = pd.read_csv('tracker_input.csv', dtype=str) # This loads the csv file into pandas DataFrame

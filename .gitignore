@@ -1,6 +1,7 @@
 # Results #
 ###################
 tracker_results_*.csv
+.env
 
 # Compiled source #
 ###################
