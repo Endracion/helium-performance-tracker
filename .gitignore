@@ -2,6 +2,10 @@
 ###################
 tracker_results_*.csv
 .env
+contacts.csv
+*backup*
+/payouts/*
+tracker_input.csv
 
 # Compiled source #
 ###################
